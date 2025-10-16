@@ -1,0 +1,31 @@
+schemaVersion: v1
+template_globs:
+  - "**/*.jinja"
+
+questions:
+  project_name:
+    type: str
+    help: Please enter the name of your application
+    default: "my_app"
+
+  project_version:
+    type: str
+    help: Please enter the version of the project
+    default: "0.1.0"
+
+  entities:
+    type: json
+    help: Configure your entities
+    schema: |
+        {
+          "type": "object",
+          "patternProperties": {
+            "^.+$": {
+              "$ref": "https://json-schema.org/draft/2020-12/schema"
+            }
+          },
+          "additionalProperties": false
+        }
+    default: |
+      {
+      }
