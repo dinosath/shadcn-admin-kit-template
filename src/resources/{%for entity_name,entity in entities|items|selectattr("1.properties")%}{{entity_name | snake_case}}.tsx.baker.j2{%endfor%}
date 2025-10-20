@@ -1,4 +1,4 @@
-{% import "templates/macros_front.jinja" as macros %}
+{% import "macros_front.jinja" as macros %}
 {% set global = namespace(imports=[]) %}
 {% for name,property in entity.properties | items -%}
     {% set global.imports = global.imports + [macros.get_input_field(property=property)] %}
