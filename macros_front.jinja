@@ -145,6 +145,14 @@ readOnly
 {% endfilter %}
 {%- endmacro -%}
 
+{%- macro get_reference(property) -%}
+{% filter trim %}
+    {% if macros.is_relation(property) == 'true'-%}
+    reference="{{ macros.get_relation(property) | plural | snake_case }}"
+    {% endif -%}
+{% endfilter %}
+{%- endmacro -%}
+
 
 {%- macro get_all_properties_by_name(entity) -%}
 {%- set properties = [] -%}
