@@ -1,11 +1,11 @@
 import { Admin } from "@/components/admin";
 import simpleRestProvider from 'ra-data-simple-rest';
-{% if entities | items | selectattr("1.properties") | length > 0 -%}
+{% if entities | items | selectattr("1.attributes") | length > 0 -%}
 import {Resource} from "ra-core";
 {% endif %}
 import { Dashboard } from "./components/dashboard/Dashboard";
 
-{% for entity_name,entity in entities | items | selectattr("1.properties") -%}
+{% for entity_name,entity in entities | items | selectattr("1.attributes") -%}
 import {{ entity_name | camel_case }} from "./resources/{{ entity_name | snake_case }}"
 {% endfor %}
 
@@ -17,7 +17,7 @@ function App() {
             dataProvider={dataProvider}
             dashboard={Dashboard}
         >
-            {% for entity_name,entity in entities | items | selectattr("1.properties") -%}
+            {% for entity_name,entity in entities | items | selectattr("1.attributes") -%}
             <Resource { ...{{ entity_name | camel_case }} }/>
             {% endfor %}
         </Admin>

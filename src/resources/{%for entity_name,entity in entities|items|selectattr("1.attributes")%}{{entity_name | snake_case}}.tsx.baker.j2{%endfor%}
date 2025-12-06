@@ -1,6 +1,6 @@
 {% import "macros_front.jinja" as macros %}
 {% set global = namespace(imports=[]) %}
-{% for name,property in entity.properties | items -%}
+{% for name,property in entity.attributes | items -%}
     {% set global.imports = global.imports + [macros.get_input_field(property=property)] %}
 {% endfor %}
 import { Bookmark } from "lucide-react";
@@ -11,7 +11,7 @@ export const {{ entity_name | pascal_case }}Create = () => (
     <Create redirect="list">
         <SimpleForm>
             <TextInput source="name" label="Name" validate={required()} />
-            {% for name,property in entity.properties | items -%}
+            {% for name,property in entity.attributes | items -%}
             <{{ macros.get_input_field(property) }} source="{{ macros.source(name=name,property=property)}}" {{ macros.get_reference(property) }}/>
             {% endfor %}
         </SimpleForm>
@@ -22,7 +22,7 @@ export const {{ entity_name | pascal_case }}Edit = () => (
     <Edit>
         <div className="flex flex-col lg:flex-row items-start justify-between">
             <SimpleForm>
-                {% for name,property in entity.properties | items -%}
+                {% for name,property in entity.attributes | items -%}
                 <{{ macros.get_input_field(property) }} source="{{ macros.source(name=name,property=property)}}" {{ macros.get_reference(property) }}/>
                 {% endfor %}
             </SimpleForm>
@@ -33,7 +33,7 @@ export const {{ entity_name | pascal_case }}Edit = () => (
 export const {{ entity_name | pascal_case }}List = () => (
     <List perPage={50}>
         <DataTable>
-            {% for name,property in entity.properties | items -%}
+            {% for name,property in entity.attributes | items -%}
             <DataTable.Col source="{{ macros.source(name=name,property=property)}}" />
             {% endfor %}
         </DataTable>
