@@ -1,6 +1,8 @@
 schemaVersion: v1
+import_root: "templates"
 template_globs:
   - "**/*.jinja"
+  - "*.jinja"
 
 questions:
   project_name:
@@ -12,6 +14,14 @@ questions:
     type: str
     help: Please enter the version of the project
     default: "0.1.0"
+
+  protocol:
+    type: str
+    help: What protocol to generate the API with?
+    default: rest
+    choices:
+      - rest
+      - grpc
 
   entities:
     type: json

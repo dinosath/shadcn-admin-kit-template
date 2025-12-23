@@ -1,7 +1,7 @@
-{% import "macros_front.jinja" as macros %}
+{% import "react-admin.jinja" as ra_macros %}
 {% set global = namespace(imports=[]) %}
 {% for name,property in entity.attributes | items -%}
-    {% set global.imports = global.imports + [macros.get_input_field(property=property)] %}
+    {% set global.imports = global.imports + [ra_macros.get_input_field(property=property)] %}
 {% endfor %}
 import { Bookmark } from "lucide-react";
 import { Create, DataTable, Edit, List, SimpleForm, {{ global.imports | unique | sort | join(', ') }} } from "@/components/admin";
@@ -12,7 +12,7 @@ export const {{ entity_name | pascal_case }}Create = () => (
         <SimpleForm>
             <TextInput source="name" label="Name" validate={required()} />
             {% for name,property in entity.attributes | items -%}
-            <{{ macros.get_input_field(property) }} source="{{ macros.source(name=name,property=property)}}" {{ macros.get_reference(property) }}/>
+            <{{ ra_macros.get_input_field(property) }} source="{{ ra_macros.source(name=name,property=property)}}" {{ ra_macros.get_reference(property) }}{{ ra_macros.get_choices(property) }}/>
             {% endfor %}
         </SimpleForm>
     </Create>
@@ -23,7 +23,7 @@ export const {{ entity_name | pascal_case }}Edit = () => (
         <div className="flex flex-col lg:flex-row items-start justify-between">
             <SimpleForm>
                 {% for name,property in entity.attributes | items -%}
-                <{{ macros.get_input_field(property) }} source="{{ macros.source(name=name,property=property)}}" {{ macros.get_reference(property) }}/>
+                <{{ ra_macros.get_input_field(property) }} source="{{ ra_macros.source(name=name,property=property)}}" {{ ra_macros.get_reference(property) }}{{ ra_macros.get_choices(property) }}/>
                 {% endfor %}
             </SimpleForm>
         </div>
@@ -34,7 +34,7 @@ export const {{ entity_name | pascal_case }}List = () => (
     <List perPage={50}>
         <DataTable>
             {% for name,property in entity.attributes | items -%}
-            <DataTable.Col source="{{ macros.source(name=name,property=property)}}" />
+            <DataTable.Col source="{{ ra_macros.source(name=name,property=property)}}" />
             {% endfor %}
         </DataTable>
     </List>
