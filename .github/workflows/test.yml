@@ -42,5 +42,6 @@ jobs:
           cat ${{ matrix.answers_file }} | baker . ./generated --answers - --force --non-interactive --skip-confirms all
 
       - uses: actions/setup-node@v6
-      - run: npm run build
+      - uses: pnpm/action-setup@v4
+      - run: pnpm run build
         working-directory: generated
