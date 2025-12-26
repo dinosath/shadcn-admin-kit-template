@@ -1,5 +1,9 @@
 import { Admin } from "@/components/admin";
+{% if protocol == 'rest' -%}
 import simpleRestProvider from 'ra-data-simple-rest';
+{% elif protocol == 'grpc' -%}
+import { grpcDataProvider } from '@/lib/grpcDataProvider';
+{% endif -%}
 {% if authentication != 'none' -%}
 import { fetchUtils } from 'ra-core';
 import { authProvider, getAuthToken } from '@/lib/authProvider';
@@ -13,6 +17,7 @@ import { Dashboard } from "./components/dashboard/Dashboard";
 import {{ entity_name | camel_case }} from "./resources/{{ entity_name | snake_case }}"
 {% endfor %}
 
+{% if protocol == 'rest' -%}
 {% if authentication != 'none' -%}
 const httpClient = (url: string, options: fetchUtils.Options = {}) => {
     const token = getAuthToken();
@@ -26,6 +31,9 @@ const httpClient = (url: string, options: fetchUtils.Options = {}) => {
 const dataProvider = simpleRestProvider('/api', httpClient);
 {% else -%}
 const dataProvider = simpleRestProvider('/api');
+{% endif -%}
+{% elif protocol == 'grpc' -%}
+const dataProvider = grpcDataProvider;
 {% endif %}
 
 function App() {

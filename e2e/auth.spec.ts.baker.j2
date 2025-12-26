@@ -1,0 +1,101 @@
+{% if authentication != 'none' -%}
+import { test, expect } from '@playwright/test';
+
+test.describe('Authentication', () => {
+  test('should show login page when not authenticated', async ({ page }) => {
+    await page.goto('/');
+    
+    // Should redirect to login
+    await expect(page.getByRole('heading', { name: /sign in/i })).toBeVisible();
+  });
+
+  test('should show login and register tabs', async ({ page }) => {
+    await page.goto('/');
+    
+    // Check for tabs
+    await expect(page.getByRole('tab', { name: /sign in/i })).toBeVisible();
+    await expect(page.getByRole('tab', { name: /register/i })).toBeVisible();
+  });
+
+  test('should show error on invalid login', async ({ page }) => {
+    await page.goto('/');
+    
+    // Fill in invalid credentials
+    await page.getByLabel(/email/i).fill('invalid@test.com');
+    await page.getByLabel(/password/i).fill('wrongpassword');
+    await page.getByRole('button', { name: /sign in/i }).click();
+    
+    // Should show error notification
+    await expect(page.locator('[role="alert"], .Toastify, [data-sonner-toast]')).toBeVisible({ timeout: 10000 });
+  });
+
+  test('should login with valid admin credentials', async ({ page }) => {
+    // This test requires the backend to be running with seeded admin user
+    // The admin password should be set via ADMIN_PASSWORD env var for testing
+    const adminPassword = process.env.ADMIN_PASSWORD || 'testpassword';
+    
+    await page.goto('/');
+    
+    // Fill in admin credentials
+    await page.getByLabel(/email/i).fill('admin');
+    await page.getByLabel(/password/i).fill(adminPassword);
+    await page.getByRole('button', { name: /sign in/i }).click();
+    
+    // Should redirect to dashboard after successful login
+    await expect(page.getByText(/dashboard/i)).toBeVisible({ timeout: 10000 });
+  });
+
+  test('should be able to register a new user', async ({ page }) => {
+    const randomEmail = `test${Date.now()}@example.com`;
+    
+    await page.goto('/');
+    
+    // Click register tab
+    await page.getByRole('tab', { name: /register/i }).click();
+    
+    // Fill in registration form
+    await page.getByLabel(/^email$/i).fill(randomEmail);
+    await page.locator('input[name="password"]').first().fill('testpassword123');
+    await page.getByLabel(/confirm password/i).fill('testpassword123');
+    await page.getByRole('button', { name: /create account/i }).click();
+    
+    // Should show success message or redirect to login
+    await expect(page.getByText(/success|sign in/i)).toBeVisible({ timeout: 10000 });
+  });
+
+  test('should logout successfully', async ({ page }) => {
+    const adminPassword = process.env.ADMIN_PASSWORD || 'testpassword';
+    
+    await page.goto('/');
+    
+    // Login first
+    await page.getByLabel(/email/i).fill('admin');
+    await page.getByLabel(/password/i).fill(adminPassword);
+    await page.getByRole('button', { name: /sign in/i }).click();
+    
+    // Wait for dashboard
+    await expect(page.getByText(/dashboard/i)).toBeVisible({ timeout: 10000 });
+    
+    // Find and click logout (usually in user menu)
+    const userMenu = page.locator('[data-testid="user-menu"], button:has-text("admin"), [aria-label*="user"]');
+    if (await userMenu.isVisible()) {
+      await userMenu.click();
+      await page.getByText(/logout|sign out/i).click();
+    }
+    
+    // Should redirect back to login
+    await expect(page.getByRole('heading', { name: /sign in/i })).toBeVisible({ timeout: 10000 });
+  });
+});
+{% else -%}
+import { test, expect } from '@playwright/test';
+
+test.describe('Application', () => {
+  test('should load the dashboard', async ({ page }) => {
+    await page.goto('/');
+    
+    // Should show dashboard
+    await expect(page.getByText(/dashboard/i)).toBeVisible({ timeout: 10000 });
+  });
+});
+{% endif -%}

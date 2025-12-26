@@ -12,10 +12,23 @@ export default defineConfig({
   },
   server: {
     proxy: {
+{% if protocol == 'rest' -%}
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+{% if authentication != 'none' -%}
+      '/auth': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+{% endif -%}
+{% elif protocol == 'grpc' -%}
+      '/{{ project_name | snake_case }}': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+{% endif %}
     },
   },
 })
