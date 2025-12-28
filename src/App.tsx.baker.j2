@@ -1,12 +1,11 @@
 import { Admin } from "@/components/admin";
 {% if protocol == 'rest' -%}
-import simpleRestProvider from 'ra-data-simple-rest';
+import { dataProvider } from '@/lib/dataProvider';
 {% elif protocol == 'grpc' -%}
 import { grpcDataProvider } from '@/lib/grpcDataProvider';
 {% endif -%}
 {% if authentication != 'none' -%}
-import { fetchUtils } from 'ra-core';
-import { authProvider, getAuthToken } from '@/lib/authProvider';
+import { authProvider } from '@/lib/authProvider';
 {% endif -%}
 {% if entities | items | selectattr("1.attributes") | length > 0 -%}
 import {Resource} from "ra-core";
@@ -17,22 +16,7 @@ import { Dashboard } from "./components/dashboard/Dashboard";
 import {{ entity_name | camel_case }} from "./resources/{{ entity_name | snake_case }}"
 {% endfor %}
 
-{% if protocol == 'rest' -%}
-{% if authentication != 'none' -%}
-const httpClient = (url: string, options: fetchUtils.Options = {}) => {
-    const token = getAuthToken();
-    const headers = new Headers(options.headers || {});
-    if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-    }
-    return fetchUtils.fetchJson(url, { ...options, headers });
-};
-
-const dataProvider = simpleRestProvider('/api', httpClient);
-{% else -%}
-const dataProvider = simpleRestProvider('/api');
-{% endif -%}
-{% elif protocol == 'grpc' -%}
+{% if protocol == 'grpc' -%}
 const dataProvider = grpcDataProvider;
 {% endif %}
 

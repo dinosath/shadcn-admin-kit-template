@@ -1,0 +1,47 @@
+version: "3"
+
+# E2E testing with WireMock mock server instead of real backend
+# Usage: docker-compose -f docker-compose.e2e.mock.yml up
+
+services:
+  wiremock:
+    image: wiremock/wiremock:3.13.0
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./wiremock/mappings.json:/home/wiremock/mappings/mappings.json:ro
+      - ./wiremock/__files:/home/wiremock/__files:ro
+    command:
+      - "--global-response-templating"
+      - "--verbose"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/__admin/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.e2e
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://wiremock:8080
+    depends_on:
+      wiremock:
+        condition: service_healthy
+
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.52.0-jammy
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - BASE_URL=http://frontend:5173
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-testpassword}
+      - MOCK_MODE=true
+    depends_on:
+      - frontend
+    command: npx playwright test --reporter=html
