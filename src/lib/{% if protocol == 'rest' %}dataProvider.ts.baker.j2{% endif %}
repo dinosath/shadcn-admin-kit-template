@@ -27,14 +27,14 @@ const baseDataProvider = simpleRestProvider('/api');
  */
 const relationFields: Record<string, string[]> = {
 {% for entity_name, entity in entities | items | selectattr("1.attributes") -%}
-{% set relations = [] -%}
+{% set ns = namespace(relations=[]) -%}
 {% for name, property in entity.attributes | items -%}
 {% if property.relation == 'manyToOne' or property.relation == 'oneToOne' -%}
-{% set _ = relations.append(name | snake_case) -%}
+{% set ns.relations = ns.relations + [name | snake_case] -%}
 {% endif -%}
 {% endfor -%}
-{% if relations | length > 0 -%}
-    '{{ entity_name | plural | snake_case }}': [{% for rel in relations %}'{{ rel }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+{% if ns.relations | length > 0 -%}
+    '{{ entity_name | plural | snake_case }}': [{% for rel in ns.relations %}'{{ rel }}'{% if not loop.last %}, {% endif %}{% endfor %}],
 {% endif -%}
 {% endfor %}
 };
