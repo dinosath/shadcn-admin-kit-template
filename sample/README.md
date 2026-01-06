@@ -124,12 +124,8 @@ The answer files can be customized to test different template configurations:
 | Option | Values | Description |
 |--------|--------|-------------|
 | `authentication` | `none`, `oidc` | Authentication method |
-| `database` | `postgres` | Database type |
-| `use_sqlx_migrations` | `true`, `false` | Use sqlx for migrations |
 | `id_type` | `integer`, `uuid`, `big_integer` | Primary key type |
 | `protocol` | `rest`, `grpc` | API protocol |
-| `features` | `open-telemetry`, `helm` | Optional features |
-| `crudcrate` | `true`, `false` | Use crudcrate for REST (REST only) |
 
 ## CI/CD Integration
 
